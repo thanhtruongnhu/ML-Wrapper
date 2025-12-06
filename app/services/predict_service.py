@@ -5,26 +5,28 @@ from typing import Dict, Any, Optional
 from app.core.exceptions import ModelUnavailable, PredictionTimeout
 from app.services.gc_tuning import RequestGCTuner
 from async_lru import alru_cache
-
+from app.models.registry import ModelRegistry
 
 # async ML prediction function
 async def async_call_credit_risk_model(model_name: str, features: Dict[str, float]) -> Dict[str, Any]:
     """
     Simulate a ML prediction call with async event loop
     """
-    await asyncio.sleep(0.05)  # simulate async I/O latency
+    # await asyncio.sleep(0.05)  # simulate async I/O latency
 
-    # Simulated prediction logic
-    score = (features["income"] / 200000) + (features["credit_history_length"] / 10) - (features["loan_amount"] / 100000)
+    # # Simulated prediction logic
+    # score = (features["income"] / 200000) + (features["credit_history_length"] / 10) - (features["loan_amount"] / 100000) 
 
-    # Clamp score between 0-1
-    prediction = max(0.0, min(1.0, round(score, 2)))
+    # # Clamp score between 0-1
+    # prediction = max(0.0, min(1.0, round(score, 2)))
 
-    return {
-        "prediction": prediction,
-        "confidence": 0.89,
-        "model_version": "v2.1"
-    }
+    # return {
+    #     "prediction": prediction,
+    #     "confidence": 0.89,
+    #     "model_version": "v2.1"
+    # }
+    model = ModelRegistry.get(model_name)
+    return await model.predict(features)
 
 def preprocess(model_name: str, features: Dict[str, float]) -> Dict[str, Any]:
     """
